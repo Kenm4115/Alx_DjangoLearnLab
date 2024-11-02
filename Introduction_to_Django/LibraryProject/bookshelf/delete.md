@@ -1,4 +1,5 @@
 
+from bookshelf.models import Book
 
 #### Delete Operation (delete.md)
 
