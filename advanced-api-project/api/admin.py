@@ -7,3 +7,4 @@ admin.site.register(Book)
 
 
 # Register your models here.
+

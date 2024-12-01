@@ -1,4 +1,5 @@
 
+
 from rest_framework import generics, permissions
 from .models import Book
 from .serializers import BookSerializer
@@ -59,6 +60,9 @@ class BookDeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticated]  # Restrict to authenticated users only
+
+
+# Create your views here.
 
 
 # Create your views here.
