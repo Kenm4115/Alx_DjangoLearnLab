@@ -4,3 +4,7 @@
     <p>{{ post.content|truncatewords:30 }}</p>
     <p>By {{ post.author }} on {{ post.published_date }}</p>
 {% endfor %}
+<form method="get" action="{% url 'post-search' %}">
+    <input type="text" name="q" placeholder="Search posts..." value="{{ query }}">
+    <button type="submit">Search</button>
+</form>
