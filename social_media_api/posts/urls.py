@@ -1,5 +1,5 @@
 
-from posts.views import PostListCreateView, PostDetailView
+from posts.views import FeedView, PostListCreateView, PostDetailView
 from .views import LikePostView, UnlikePostView, FeedView, CommentViewSet
 from django.urls import path
 from rest_framework.routers import DefaultRouter

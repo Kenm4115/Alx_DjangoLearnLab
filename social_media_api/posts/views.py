@@ -1,13 +1,12 @@
 
+from rest_framework import generics, permissions, status, viewsets, filters
 from notifications.models import Notification
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import generics, permissions, status, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from posts.models import Post, Like, Comment
 from posts.serializers import PostSerializer, CommentSerializer
-from rest_framework.decorators import api_view
 
 # Post List/Create View
 
@@ -65,15 +64,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class FeedView(APIView):
-    permission_classes = [IsAuthenticated]
+# class FeedView(APIView):
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        followed_users = request.user.following.all()
-        posts = Post.objects.filter(
-            author__in=followed_users).order_by('-created_at')
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#     def get(self, request):
+#         followed_users = request.user.following.all()
+#         posts = Post.objects.filter(
+#             author__in=followed_users).order_by('-created_at')
+#         serializer = PostSerializer(posts, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LikePostView(APIView):
@@ -113,3 +112,25 @@ class UnlikePostView(APIView):
             return Response({"message": "You have not liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         except Post.DoesNotExist:
             return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class FeedView(APIView):
+    """
+    API endpoint to display posts from users the authenticated user follows.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Get the current user
+        current_user = request.user
+
+        # Get the list of users that the current user follows
+        following_users = current_user.following.all()
+
+        # Query posts created by these users, ordered by creation date (newest first)
+        posts = Post.objects.filter(
+            author__in=following_users).order_by('-created_at')
+
+        # Serialize the posts and return them
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
