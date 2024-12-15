@@ -14,6 +14,8 @@ class FeedView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    Post.objects.filter(author__in=following_users).order_by
+
     def get(self, request):
         # Get the current user
         current_user = request.user
@@ -22,7 +24,7 @@ class FeedView(APIView):
         following_users = current_user.following.all()
 
         # Query posts created by these users, ordered by creation date (newest first)
-        Post.objects.filter(
+        posts = Post.objects.filter(
             author__in=following_users).order_by('-created_at')
 
         # Serialize the posts and return them
