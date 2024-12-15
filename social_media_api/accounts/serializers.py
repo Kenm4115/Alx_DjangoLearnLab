@@ -7,36 +7,6 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'email',
-                  'bio', 'profile_picture', 'followers']
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['username', 'password', 'email']
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password']
-        )
-        Token.objects.create(user=user)  # Automatically create a token
-        return user
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'bio',
-                  'profile_picture', 'followers', 'following']
-
-
-class UserSerializer(serializers.ModelSerializer):
     # Add password fields as write-only for security
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
@@ -65,3 +35,26 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
         )
         return user
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email',
+                  'bio', 'profile_picture', 'followers', 'following']
+
+
+# class RegisterSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CustomUser
+#         fields = ['username', 'password', 'email']
+#         extra_kwargs = {'password': {'write_only': True}}
+
+#     def create(self, validated_data):
+#         user = CustomUser.objects.create_user(
+#             username=validated_data['username'],
+#             email=validated_data['email'],
+#             password=validated_data['password']
+#         )
+#         Token.objects.create(user=user)  # Automatically create a token
+#         return user
