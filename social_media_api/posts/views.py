@@ -8,6 +8,28 @@ from django.shortcuts import get_object_or_404
 from posts.models import Post, Like, Comment
 from posts.serializers import PostSerializer, CommentSerializer
 
+class FeedView(APIView):
+    """
+    API endpoint to display posts from users the authenticated user follows.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Get the current user
+        current_user = request.user
+
+        # Get the list of users that the current user follows
+        following_users = current_user.following.all()
+
+        # Query posts created by these users, ordered by creation date (newest first)
+        posts = Post.objects.filter(
+            author__in=following_users).order_by('-created_at')
+
+        # Serialize the posts and return them
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 # Post List/Create View
 
 
@@ -114,23 +136,4 @@ class UnlikePostView(APIView):
             return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
-class FeedView(APIView):
-    """
-    API endpoint to display posts from users the authenticated user follows.
-    """
-    permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        # Get the current user
-        current_user = request.user
-
-        # Get the list of users that the current user follows
-        following_users = current_user.following.all()
-
-        # Query posts created by these users, ordered by creation date (newest first)
-        posts = Post.objects.filter(
-            author__in=following_users).order_by('-created_at')
-
-        # Serialize the posts and return them
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
