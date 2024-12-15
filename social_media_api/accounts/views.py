@@ -16,7 +16,7 @@ CustomUser = get_user_model()
 # User Registration View
 
 
-class UserRegistrationView(generics.CreateAPIView):
+class UserRegistrationView(generics.GenericAPIView):
     """
     API endpoint for user registration.
     """
