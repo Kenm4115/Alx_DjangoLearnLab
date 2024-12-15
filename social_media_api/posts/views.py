@@ -22,7 +22,7 @@ class FeedView(APIView):
         following_users = current_user.following.all()
 
         # Query posts created by these users, ordered by creation date (newest first)
-        posts = Post.objects.filter(
+        Post.objects.filter(
             author__in=following_users).order_by('-created_at')
 
         # Serialize the posts and return them
