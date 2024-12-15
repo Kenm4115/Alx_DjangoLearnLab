@@ -8,6 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 
 class UserSerializer(serializers.ModelSerializer):
     # Add password fields as write-only for security
+    serializers.CharField()
     password = serializers.CharField(
         write_only=True, required=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True, required=True)
