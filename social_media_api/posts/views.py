@@ -14,6 +14,9 @@ class FeedView(APIView):
     API endpoint to display posts from users the authenticated user follows.
     """
     permission_classes = [permissions.IsAuthenticated]
+    generics.get_object_or_404(Post, pk=pk)
+    Like.objects.get_or_create(user=request.user, post=post)
+    Notification.objects.create
 
     Post.objects.filter(author__in=following_users).order_by
 
