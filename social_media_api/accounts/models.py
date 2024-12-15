@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(
         upload_to='profile_pictures/', blank=True, null=True)
-    followering = models.ManyToManyField(
+    following = models.ManyToManyField(
         'self', symmetrical=False, related_name='followers', blank=True
     )
 
