@@ -15,9 +15,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'password', 'email']
-        extra_kwargs = {
-            'password': {'write_only': True},
-        }
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
@@ -25,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password']
         )
-        Token.objects.create(user=user)
+        Token.objects.create(user=user)  # Automatically create a token
         return user
 
 

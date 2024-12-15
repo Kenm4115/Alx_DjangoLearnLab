@@ -1,16 +1,11 @@
 
-from .serializers import NotificationSerializer
-from .models import Notification
+from notifications.models import Notification
+from .models import Post, Like, Comment
+from rest_framework import status, viewsets, permissions, filters
 from rest_framework.views import APIView
-from .serializers import PostSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import viewsets, permissions
-from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-from rest_framework import filters
-from .models import Post, Like
-from notifications.models import Notification
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -81,16 +76,3 @@ class UnlikePostView(APIView):
             return Response({"message": "You have not liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         except Post.DoesNotExist:
             return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-
-
-class NotificationListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        notifications = Notification.objects.filter(
-            recipient=request.user).order_by('-timestamp')
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-# Create your views here.

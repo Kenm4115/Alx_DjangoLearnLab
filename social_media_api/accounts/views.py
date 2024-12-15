@@ -2,11 +2,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
 from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer
-from django.contrib.auth import authenticate
 
 
 class RegisterView(APIView):
@@ -65,6 +65,3 @@ class UnfollowUserView(APIView):
             return Response({"message": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
-
-
-# Create your views here.
