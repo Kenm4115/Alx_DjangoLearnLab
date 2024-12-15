@@ -1,22 +1,59 @@
 
 from notifications.models import Notification
-from .models import Post, Like, Comment
-from rest_framework import status, viewsets, permissions, filters
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions, status, viewsets, filters
 from rest_framework.response import Response
-from .serializers import PostSerializer, CommentSerializer
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+from posts.models import Post, Like, Comment
+from posts.serializers import PostSerializer, CommentSerializer
+from rest_framework.decorators import api_view
+
+# Post List/Create View
 
 
-class PostViewSet(viewsets.ModelViewSet):
+class PostListCreateView(generics.ListCreateAPIView):
+    """
+    API view to list all posts or create a new post.
+    """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'content']
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+# Post Detail View
+class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view to retrieve, update, or delete a single post.
+    """
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_object(self):
+        return get_object_or_404(Post, pk=self.kwargs.get("pk"))
+
+
+# Like and Unlike Post View
+class LikePostView(APIView):
+    """
+    API endpoint to like or unlike a post.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)  # Ensure the post exists
+        like, created = Like.objects.get_or_create(
+            user=request.user, post=post)
+
+        if created:
+            return Response({"message": "Post liked successfully!"}, status=status.HTTP_201_CREATED)
+        else:
+            like.delete()
+            return Response({"message": "Post unliked successfully!"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
